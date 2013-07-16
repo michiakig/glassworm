@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="triangle.js"></script>
+
+    <script type="x-shader/x-vertex" id="vertex">
+attribute vec2 pos;
+
+void main() {
+    gl_Position = vec4(pos, 0, 1);
+}
+    </script>
+
+    <script type="x-shader/x-fragment" id="fragment">
+precision mediump float;
+
+void main() {
+    gl_FragColor = vec4(0, 0.8, 0, 1);
+}
+    </script>
+  </head>
+  <body onload="Triangle.draw();">
+    <canvas id="canvas" width="400" height="400"></canvas>
+  </body>
+</html>
