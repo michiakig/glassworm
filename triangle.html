@@ -2,21 +2,29 @@
 <html>
   <head>
     <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="matrix.js"></script>
     <script type="text/javascript" src="triangle.js"></script>
 
     <script type="x-shader/x-vertex" id="vertex">
 attribute vec2 pos;
+attribute vec4 acolor;
+uniform mat4 uproj;
+varying vec4 vcolor;
 
 void main() {
+//    gl_Position = uproj * vec4(pos, 0, 1);
     gl_Position = vec4(pos, 0, 1);
+    vcolor = acolor;
 }
     </script>
 
     <script type="x-shader/x-fragment" id="fragment">
 precision mediump float;
 
+varying vec4 vcolor;
+
 void main() {
-    gl_FragColor = vec4(0, 0.8, 0, 1);
+    gl_FragColor = vcolor;
 }
     </script>
   </head>

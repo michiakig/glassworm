@@ -4,20 +4,26 @@
         var canvas = document.getElementById('canvas');
         var gl = canvas.getContext('experimental-webgl');
 
-        var vertexPosBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
-
-        var vertices = [-0.5, -0.5, 0.5, -0.5, 0, 0.5];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
+        // set up shaders
         var vs = document.getElementById('vertex').textContent;
         var fs = document.getElementById('fragment').textContent;
         var program = Utils.createProgram(gl, vs, fs);
         gl.useProgram(program);
 
-        var vertexPosAttrib = gl.getAttribLocation(program, 'pos');
-        gl.enableVertexAttribArray(vertexPosAttrib);
-        gl.vertexAttribPointer(vertexPosAttrib, 2, gl.FLOAT, false, 0, 0);
+       // var p = proj(canvas.width, canvas.height, canvas.width);
+       // var loc = gl.getUniformLocation(program, 'uproj');
+       // gl.uniformMatrix4fv(loc, false, new Float32Array(p.data));
+
+//        Utils.pushData(gl, [100, 300, 300, 300, 200, 100]);
+        Utils.pushData(gl, [-0.5, -0.5, 0.5, -0.5, 0, 0.5]);
+        Utils.updateAttrib(gl, program, 'pos', 2);
+
+        Utils.pushData(gl, [
+            1, 0, 0, 1,
+            0, 1, 0, 1,
+            0, 0, 1, 1
+        ]);
+        Utils.updateAttrib(gl, program, 'acolor', 4);
 
         gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
