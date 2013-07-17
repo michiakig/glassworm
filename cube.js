@@ -10,7 +10,7 @@
 
     var canvas;
     var gl;
-    var x=0, y=0, rx=0, ry=0, rz=0;
+    var x=150, y=150, rx=0, ry=0, rz=0;
 
     function handle(evt) {
         switch(evt.keyCode) {
@@ -35,13 +35,42 @@
     function main() {
         canvas = document.getElementById('canvas');
         gl = canvas.getContext('experimental-webgl');
-
-        document.body.addEventListener('keydown', handle);
+        gl.enable(gl.CULL_FACE);
+//        document.body.addEventListener('keydown', handle);
         draw();
     }
 
+    function randColor() {
+        var r = Math.random();
+        var g = Math.random();
+        var b = Math.random();
+        return [r,g,b,1];
+    }
+
+    function makeColors(n) {
+        var c = randColor();
+        var res = [];
+        for(var i = 0; i < n; i++) {
+            res = res.concat(c);
+        }
+        return res;
+    }
+
+    var colors = [].concat(
+            makeColors(6),
+            makeColors(6),
+            makeColors(6),
+            makeColors(6),
+            makeColors(6),
+            makeColors(6)
+        );
+
     function draw() {
         requestAnimationFrame(draw);
+
+        rx+=1;
+        ry+=1;
+        rz+=1;
 
         // set up shaders
         var vs = document.getElementById('vertex').textContent;
@@ -58,47 +87,69 @@
         gl.uniformMatrix4fv(loc, false, new Float32Array(p.data));
 
         Utils.pushData(gl, [
-            0,  0,   0,
-           -50, 86.6, 50,
-            50, 86.6, 50,
+            // front side
+            0,  50, 0,
+            0,  0,  0,
+            50, 50, 0,
 
-            0,  0,   0,
-            50, 86.6, 50,
-            0,  86.6,-50,
+            50, 50, 0,
+            0,  0,  0,
+            50, 0,  0,
 
-            0,  0,   0,
-            0,  86.6,-50,
-            -50,86.6, 50,
+            // right side
+            50, 50,  0,
+            50, 0,   0,
+            50, 50, -50,
 
-            0,  86.6,-50,
-            -50,86.6, 50,
-            50, 86.6, 50
+            50, 50, -50,
+            50, 0,   0,
+            50, 0,  -50,
+
+            // back side
+            50, 50, -50,
+            50,  0, -50,
+            0,  50, -50,
+
+            0,  50, -50,
+            50, 0, -50,
+            0,  0, -50,
+
+            // left side
+            0,  50, -50,
+            0,  0,  -50,
+            0,  50,   0,
+
+            0,  50,  0,
+            0,  0,  -50,
+            0,  0,   0,
+
+            // top side
+            0,  0,  0,
+            0,  0, -50,
+            50,  0, 0,
+
+            50, 0, 0,
+            0,  0, -50,
+            50, 0, -50,
+
+            // bottom side
+            0,  50, -50,
+            0,  50,  0,
+            50, 50, -50,
+
+            50, 50, -50,
+            0,  50,  0,
+            50, 50,  0
         ]);
         Utils.updateAttrib(gl, program, 'pos', 3);
 
-        Utils.pushData(gl, [
-            0.8, 0.8, 0, 1,
-            0.8, 0.8, 0, 1,
-            0.8, 0.8, 0, 1,
-
-            0, 0.8, 0.8, 1,
-            0, 0.8, 0.8, 1,
-            0, 0.8, 0.8, 1,
-
-            0.8, 0, 0.8, 1,
-            0.8, 0, 0.8, 1,
-            0.8, 0, 0.8, 1,
-
-            1, 0, 0, 1,
-            1, 0, 0, 1,
-            1, 0, 0, 1
-        ]);
+        Utils.pushData(gl, colors);
         Utils.updateAttrib(gl, program, 'acolor', 4);
 
-        gl.drawArrays(gl.TRIANGLES, 0, 12);
+        gl.drawArrays(gl.TRIANGLES, 0, 36);
     }
 
-    window.Triangle = {
+    window.Demo = {
         main: main,
         draw: draw
     };
