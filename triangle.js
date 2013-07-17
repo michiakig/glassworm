@@ -10,14 +10,19 @@
 
     var canvas;
     var gl;
-    var x=0, y=0;
+    var x=0, y=0, r=0;
 
     function handle(evt) {
         switch(evt.keyCode) {
-            case 37: x--; break;
-            case 38: y--; break;
-            case 39: x++; break;
-            case 40: y++; break;
+            case 37: x-=10; break;
+            case 38: y-=10; break;
+            case 39: x+=10; break;
+            case 40: y+=10; break;
+
+            case 74: r+=10; break;
+            case 75: r-=10; break;
+
+            default: console.log('handle:'+evt.keyCode); break;
         }
     }
 
@@ -39,10 +44,12 @@
         gl.useProgram(program);
 
         var p = proj(canvas.width, canvas.height, canvas.width);
+        p = p.mul(trans(x, y, 0));
+        p = p.mul(rotZ(r * Math.PI / 180));
         var loc = gl.getUniformLocation(program, 'uproj');
         gl.uniformMatrix4fv(loc, false, new Float32Array(p.data));
 
-        Utils.pushData(gl, [100+x, 300+y, 300+x, 300+y, 200+x, 100+y]);
+        Utils.pushData(gl, [0, 0, -50, 100, 50, 100]);
         Utils.updateAttrib(gl, program, 'pos', 2);
 
         Utils.pushData(gl, [
