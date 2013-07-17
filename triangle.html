@@ -6,13 +6,13 @@
     <script type="text/javascript" src="triangle.js"></script>
 
     <script type="x-shader/x-vertex" id="vertex">
-attribute vec2 pos;
+attribute vec3 pos;
 attribute vec4 acolor;
 uniform mat4 uproj;
 varying vec4 vcolor;
 
 void main() {
-    gl_Position = uproj * vec4(pos, 0, 1);
+    gl_Position = uproj * vec4(pos, 1);
     vcolor = acolor;
 }
     </script>
