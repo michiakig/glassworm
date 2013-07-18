@@ -8,10 +8,10 @@
             window.msRequestAnimationFrame;
     window.requestAnimationFrame = requestAnimationFrame;
 
-    var canvas;
-    var gl;
+    var canvas, gl;
     var x=150, y=150, rx=0, ry=0, rz=0;
     var program;
+    var projection;
 
     var colors = [].concat(
             makeColors(6),
@@ -110,6 +110,9 @@
         program = Utils.createProgram(gl, vs, fs);
         gl.useProgram(program);
 
+        projection = proj(canvas.width, canvas.height, canvas.width)
+            .mul(trans(x, y, 0));
+
         draw();
     }
 
@@ -129,14 +132,14 @@
         return res;
     }
 
-    var p = proj(canvas.width, canvas.height, canvas.width).mul(trans(x, y, 0));
     function draw() {
         requestAnimationFrame(draw);
 
         rx+=1;
         ry+=1;
         rz+=1;
-
+        
+        var p = projection;
         p = p.mul(rotX(rx * Math.PI / 180));
         p = p.mul(rotY(ry * Math.PI / 180));
         p = p.mul(rotZ(rz * Math.PI / 180));
