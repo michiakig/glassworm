@@ -113,6 +113,12 @@
         projection = proj(canvas.width, canvas.height, canvas.width)
             .mul(trans(x, y, 0));
 
+        Utils.pushData(gl, geo);
+        Utils.updateAttrib(gl, program, 'pos', 3);
+
+        Utils.pushData(gl, colors);
+        Utils.updateAttrib(gl, program, 'acolor', 4);
+
         draw();
     }
 
@@ -145,12 +151,6 @@
         p = p.mul(rotZ(rz * Math.PI / 180));
         var loc = gl.getUniformLocation(program, 'uproj');
         gl.uniformMatrix4fv(loc, false, new Float32Array(p.data));
-
-        Utils.pushData(gl, geo);
-        Utils.updateAttrib(gl, program, 'pos', 3);
-
-        Utils.pushData(gl, colors);
-        Utils.updateAttrib(gl, program, 'acolor', 4);
 
         gl.drawArrays(gl.TRIANGLES, 0, 36);
     }
