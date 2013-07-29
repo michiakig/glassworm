@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="x-shader/x-vertex" id="vertex">
+attribute vec3 pos;
+attribute vec3 acolor;
+uniform mat4 uproj;
+varying vec3 vcolor;
+
+void main() {
+    gl_Position = uproj * vec4(pos, 1);
+    vcolor = acolor;
+}
+    </script>
+
+    <script type="x-shader/x-fragment" id="fragment">
+precision mediump float;
+
+varying vec3 vcolor;
+
+void main() {
+    gl_FragColor = vec4(vcolor, 1);
+}
+    </script>
+    <script src="matrix.js"></script>
+    <script src="utils.js"></script>
+    <script src="scratch.js"></script>
+    <style>
+body {
+  font-family: 'Comic Sans MS', Textile, cursive
+}
+    </style>
+  </head>
+  <body onload="main();">
+    <canvas id="canvas" width="400" height="400"></canvas>
+  </body>
+</html>
