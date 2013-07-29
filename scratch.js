@@ -33,6 +33,11 @@
         gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
 
         gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        p = proj(canvas.width*2, canvas.height*2, canvas.width*2);
+        loc = gl.getUniformLocation(program, 'uproj');
+        gl.uniformMatrix4fv(loc, false, new Float32Array(p.data));
+
         gl.drawArrays(gl.TRIANGLES, 3, 3);
     }
     window.main = main;
