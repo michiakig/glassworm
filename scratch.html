@@ -3,23 +3,18 @@
   <head>
     <script type="x-shader/x-vertex" id="vertex">
 attribute vec3 pos;
-attribute vec3 acolor;
 uniform mat4 uproj;
-varying vec3 vcolor;
 
 void main() {
     gl_Position = uproj * vec4(pos, 1);
-    vcolor = acolor;
 }
     </script>
 
     <script type="x-shader/x-fragment" id="fragment">
 precision mediump float;
 
-varying vec3 vcolor;
-
 void main() {
-    gl_FragColor = vec4(vcolor, 1);
+    gl_FragColor = vec4(0, 0.8, 0, 1);
 }
     </script>
     <script src="matrix.js"></script>
