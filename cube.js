@@ -9,92 +9,93 @@
     window.requestAnimationFrame = requestAnimationFrame;
 
     var canvas, gl;
-    var x=150, y=150, rx=0, ry=0, rz=0;
+    var x=150, y=150, z=0, rx=0, ry=0, rz=0;
     var program;
     var projection;
 
-    var colors = [].concat(
-            makeColors(6),
-            makeColors(6),
-            makeColors(6),
-            makeColors(6),
-            makeColors(6),
-            makeColors(6)
-        );
+    var cube = new Geometry([
+        // front
+        [0,  50, 0, 1],
+        [0,  0,  0, 1],
+        [50, 50, 0, 1],
 
-    var geo = [
-            // front side
-            0,  50, 0,
-            0,  0,  0,
-            50, 50, 0,
+        [50, 50, 0, 1],
+        [0,  0,  0, 1],
+        [50, 0,  0, 1],
 
-            50, 50, 0,
-            0,  0,  0,
-            50, 0,  0,
+        // right
+        [50, 50,  0, 1],
+        [50, 0,   0, 1],
+        [50, 50, -50, 1],
 
-            // right side
-            50, 50,  0,
-            50, 0,   0,
-            50, 50, -50,
+        [50, 50, -50, 1],
+        [50, 0,   0, 1],
+        [50, 0,  -50, 1],
 
-            50, 50, -50,
-            50, 0,   0,
-            50, 0,  -50,
+        // back
+        [50, 50, -50, 1],
+        [50,  0, -50, 1],
+        [0,  50, -50, 1],
 
-            // back side
-            50, 50, -50,
-            50,  0, -50,
-            0,  50, -50,
+        [0,  50, -50, 1],
+        [50, 0, -50, 1],
+        [0,  0, -50, 1],
 
-            0,  50, -50,
-            50, 0, -50,
-            0,  0, -50,
+        // left
+        [0,  50, -50, 1],
+        [0,  0,  -50, 1],
+        [0,  50,   0, 1],
 
-            // left side
-            0,  50, -50,
-            0,  0,  -50,
-            0,  50,   0,
+        [0,  50,  0, 1],
+        [0,  0,  -50, 1],
+        [0,  0,   0, 1],
 
-            0,  50,  0,
-            0,  0,  -50,
-            0,  0,   0,
+        // top
+        [0,  0,  0, 1],
+        [0,  0, -50, 1],
+        [50,  0, 0, 1],
 
-            // top side
-            0,  0,  0,
-            0,  0, -50,
-            50,  0, 0,
+        [50, 0, 0, 1],
+        [0,  0, -50, 1],
+        [50, 0, -50, 1],
 
-            50, 0, 0,
-            0,  0, -50,
-            50, 0, -50,
+        // bottom
+        [0,  50, -50, 1],
+        [0,  50,  0, 1],
+        [50, 50, -50, 1],
 
-            // bottom side
-            0,  50, -50,
-            0,  50,  0,
-            50, 50, -50,
+        [50, 50, -50, 1],
+        [0,  50,  0, 1],
+        [50, 50,  0, 1]
+    ].map(function(arr) { return vec4.fromValues.apply(vec4, arr); }));
 
-            50, 50, -50,
-            0,  50,  0,
-            50, 50,  0
-        ].map(function(x) {return x-25;});
+    var translations = [
+        vec3.fromValues(100, 0, 0),
+        vec3.fromValues(0, 100, 0),
+        vec3.fromValues(0, 0, 100),
+
+        vec3.fromValues(-100, 0, 0),
+        vec3.fromValues(0, -100, 0),
+        vec3.fromValues(0, 0, -100)
+    ];
+
+    var cube1, t, geo = cube;
+    for(var i = 0; i < translations.length; i++) {
+        cube1 = cube.clone();
+        t = mat4.create();
+        mat4.translate(t, t, translations[i]);
+        cube1.transform(t);
+        geo = geo.union(cube1);
+    }
 
     function handle(evt) {
         switch(evt.keyCode) {
-            case 37: x-=10; break;
-            case 38: y-=10; break;
-            case 39: x+=10; break;
-            case 40: y+=10; break;
+            case 37: /* left */  break;
+            case 38: /* up */    z+=10; break;
+            case 39: /* right */ break;
+            case 40: /* down  */ z-=10; break;
 
-            case 74: rx+=10; break;
-            case 75: rx-=10; break;
-
-            case 78: ry+=10; break;
-            case 77: ry-=10; break;
-
-            case 85: rz+=10; break;
-            case 73: rz-=10; break;
-
-            default: console.log('handle:'+evt.keyCode); break;
+            default: break;
         }
     }
 
@@ -102,7 +103,9 @@
         canvas = document.getElementById('canvas');
         gl = canvas.getContext('experimental-webgl');
         gl.enable(gl.CULL_FACE);
-//        document.body.addEventListener('keydown', handle);
+        gl.enable(gl.DEPTH_TEST);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        document.body.addEventListener('keydown', handle);
 
         // set up shaders
         var vs = document.getElementById('vertex').textContent;
@@ -111,12 +114,17 @@
         gl.useProgram(program);
 
         projection = proj(canvas.width, canvas.height, canvas.width)
-            .mul(trans(x, y, 0));
+            .mul(trans(x, y, z));
 
-        Utils.pushData(gl, geo);
-        Utils.updateAttrib(gl, program, 'pos', 3);
+        Utils.pushData(gl, geo.flatten());
+        Utils.updateAttrib(gl, program, 'pos', 4);
 
-        Utils.pushData(gl, colors);
+        window.colors = [];
+        for(var i = 0; i < geo.flatten().length; i++) {
+            window.colors=window.colors.concat(randColor());
+        }
+
+        Utils.pushData(gl, window.colors);
         Utils.updateAttrib(gl, program, 'acolor', 4);
 
         draw();
@@ -140,6 +148,7 @@
 
     function draw() {
         requestAnimationFrame(draw);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         rx+=1;
         ry+=1;
@@ -152,7 +161,7 @@
         var loc = gl.getUniformLocation(program, 'uproj');
         gl.uniformMatrix4fv(loc, false, new Float32Array(p.data));
 
-        gl.drawArrays(gl.TRIANGLES, 0, 36);
+        gl.drawArrays(gl.TRIANGLES, 0, geo.count());
     }
 
     window.Demo = {
