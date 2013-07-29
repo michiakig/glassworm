@@ -145,6 +145,18 @@
            -1,   1,   0,   1
         ]);
     }
+
+    function persp(fov, aspect, near, far) {
+        var f = Math.tan(Math.PI * 0.5 - 0.5 * fov);
+        var rangeInv = 1.0 / (near - far);
+        return new Matrix4([
+            f / aspect, 0, 0, 0,
+            0, f, 0, 0,
+            0, 0, (near + far) * rangeInv, -1,
+            0, 0, near * far * rangeInv * 2, 0
+        ]);
+    }
+
     exports.Matrix4 = Matrix4;
     exports.identity = identity;
     exports.random = random;
@@ -154,4 +166,5 @@
     exports.rotZ = rotZ;
     exports.scale = scale;
     exports.proj = proj;
+    exports.persp = persp;
 })(typeof exports === 'undefined' ? window : exports);
